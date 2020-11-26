@@ -6,7 +6,11 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -35,7 +39,34 @@ public final class LambdaFilter extends JFrame {
     private static final long serialVersionUID = 1760990730218643730L;
 
     private enum Command {
-        IDENTITY("No modifications", Function.identity());
+        IDENTITY("No modifications", Function.identity()),
+        LOWERCASE("Convert to lowercase", s -> String.join(" ", Arrays.stream(s.split("(\\s|\\p{Punct})+"))
+                                                                      .map(String::toLowerCase)
+                                                                      .collect(Collectors.toList()))),
+        COUNT_CHARS("Count the number of chars", s -> Long.toString(s.chars().count())),
+        COUNT_LINES("Count the number of lines", s -> Long.toString(Arrays.stream(s.split("\n")) //System.lineSeparator()...
+                                                                          .count())),
+        ORDER("List all the words in alphabetical order", s -> Arrays.stream(s.split("(\\s|\\p{Punct})+"))
+                                                                     .sorted(String::compareToIgnoreCase)
+                                                                     .collect(Collectors.toList())
+                                                                     .toString()),
+        COUNT_EACH_WORD("Write the count for each word", s -> {
+            String returnString = "";
+            final List<String> sortedWords = Arrays.stream(s.split("(\\s|\\p{Punct})+"))
+                                                   .sorted(String::compareTo)
+                                                   .collect(Collectors.toCollection(() -> new ArrayList<>()));
+            int i;
+            int nWords = 1;
+            for (i = 0; i < sortedWords.size() - 1; i++) {
+                if (sortedWords.get(i).equals(sortedWords.get(i + 1))) {
+                    nWords++;
+                } else {
+                    returnString = returnString.concat(sortedWords.get(i) + "->" + nWords + "\n");
+                    nWords = 1;
+                }
+            }
+            return returnString.concat(sortedWords.get(i) + "->" + nWords);
+        });
 
         private final String commandName;
         private final Function<String, String> fun;

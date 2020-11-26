@@ -59,17 +59,17 @@ public final class MusicGroupImpl implements MusicGroup {
     @Override
     public int countSongsInNoAlbum() {
         return (int) this.songs.stream()
-                .filter(s -> s.getAlbumName().isEmpty())
-                .count();
+                               .filter(s -> s.getAlbumName().isEmpty())
+                               .count();
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
         final Optional<Double> sumTime = this.songs.stream()
-                .filter(s -> s.getAlbumName().isPresent())
-                .filter(s -> s.getAlbumName().get().equals(albumName))
-                .map(s -> s.getDuration())
-                .reduce((a, b) -> a + b);
+                                                   .filter(s -> s.getAlbumName().isPresent())
+                                                   .filter(s -> s.getAlbumName().get().equals(albumName))
+                                                   .map(s -> s.getDuration())
+                                                   .reduce((a, b) -> a + b);
         final int nSongs = this.countSongs(albumName);
         if (sumTime.isPresent()) {
             return OptionalDouble.of(sumTime.get() / nSongs);
@@ -80,7 +80,8 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Optional<String> longestSong() {
-        final Optional<Song> maxSong = this.songs.stream().max((s, s1) -> Double.compare(s.getDuration(), s1.getDuration()));
+        final Optional<Song> maxSong = this.songs.stream()
+                                                 .max((s, s1) -> Double.compare(s.getDuration(), s1.getDuration()));
         if (maxSong.isPresent()) {
             return Optional.of(maxSong.get().getSongName());
         } else {
